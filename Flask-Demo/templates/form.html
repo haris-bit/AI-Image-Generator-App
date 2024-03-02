@@ -12,14 +12,12 @@
     <form id="imageForm" method="POST" action="/submit" enctype="multipart/form-data">
         <label for="prompt">Enter Prompt:</label><br>
         <input type="text" id="prompt" name="prompt"><br/><br/>
-        <label for="prompt">Upload Your Existing Image:</label><br>
-        <input type="file" id="logo" name="logo" accept="image/*"><br>
         <button type="submit">Generate Image</button>
     </form>
     <div id="loading" style="display:none;">Loading...</div>
     <div id="imageContainer"></div>
 
-    <script>
+    <!-- <script>
         $(document).ready(function(){
             $('#imageForm').submit(function(event){
                 event.preventDefault();
@@ -43,6 +41,6 @@
                 });
             });
         });
-    </script>
+    </script> -->
 </body>
 </html>

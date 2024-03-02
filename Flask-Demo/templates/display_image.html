@@ -7,49 +7,10 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Image Generator App</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-              </li>
-            </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-
-
-
+  
     <div class="container">
 
         <h1>Here is your generated image:</h1>
-        <h3>{{ name }}</h3>
         <!-- Display the generated image -->
         <img src="{{ image_url }}" alt="Generated Image" width="400px" height="400px">
         <br/>
@@ -58,5 +19,31 @@
         <a href="{{ url_for('index') }}"><button type="button" class="btn btn-primary">Go Back</button></a>
 
     </div>
+
+
+    <div class="container">
+
+      <h1>Upload your Own Image</h1>
+
+    <form method="POST" action="/success" enctype="multipart/form-data">
+        {{form.hidden_tag()}}
+        {{form.file()}}
+        {{form.submit()}}
+    </form>
+
+    {% if filename %}
+    <img src="{{ url_for('static', filename='files/' + filename) }}" width="400px" height="400px">
+    {% endif %}
+
+    </div>
+
+
+    <script>
+      // Get the image URL from the template variable
+      var imageUrl = "{{ image_url }}";
+      console.log(imageUrl);
+      // Set the image source dynamically using JavaScript
+      document.getElementById("generated_image").src = imageUrl;
+  </script>
 </body>
 </html>

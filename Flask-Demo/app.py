@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import FileField, SubmitField
 from werkzeug.utils import secure_filename
 import os
+from flask import session
 
 
 # initialize the Flask app and the OpenAI client
@@ -42,12 +43,10 @@ def test():
     return render_template('index.html', form=form)
 
 
-@app.route('/submit', methods=['POST'])
+
+@app.route('/submit', methods=["GET", "POST"])
 def handle_form_submission():
     prompt = request.form['prompt']
-
-
-
 
     try:
         # Use the working code from sample.py for image generation
@@ -60,35 +59,46 @@ def handle_form_submission():
         )
         
         # Extract the image URL from the response
-        image_url = response.data[0].url
-        name = "Andrew Green"
+        image_url = str(response.data[0].url)
+
+
+        # Store the image URL in the session
+        session['image_url'] = image_url
         
-        # Render the template to display the image
-        if "logo" in request.files:
-            logo_file = request.files['logo']
-            if logo_file:
-                background = Image.open(image_url)
-                logo = Image.opeb(logo_file.stream).convert("RGBA")
-
-                logo_size = (100, 100)
-
-                logo.thumbnail(logo_size, Image.ANTIALIAS)
-
-                position = (background.width - logo.width, background.height - logo.height)
-
-                background.paste(logo, position, logo)
-
-                img_io = io.BytesIO()
-                background.save(img_io, 'PNG', quality=100)
-                img_io.seek(0)
-                return send_file(img_io, mimetype='image/png')
+            
+        
+        form = UploadFileForm()
+        if form.validate_on_submit():
+            file = form.file.data # First grab the file
+            filename = secure_filename(file.filename) # Then secure the filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return render_template('display_image.html', image_url=image_url, filename=filename, form=form)
+        
 
 
-        return render_template('display_image.html', image_url=image_url, name=name)
+        return render_template('display_image.html', image_url=image_url, form=form)
 
     except Exception as e:
         # Return a JSON response if an error occurs
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/success', methods=["GET", "POST"])
+def testing():
+    form = UploadFileForm()
+    if form.validate_on_submit():
+        file = form.file.data # First grab the file
+        filename = secure_filename(file.filename) # Then secure the filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Retrieve the image URL from the session
+        image_url = session.get('image_url')
+        return render_template('display_image.html', filename=filename, form=form, image_url=image_url)
+    return render_template('display_image.html', form=form)
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
